@@ -2,10 +2,24 @@ import pandas as pd
 import re
 import requests
 import nltk
+from nltk.tokenize import word_tokenize
 from io import BytesIO
 from nltk.corpus import stopwords
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 
+try:
+    # Mengunduh 'punkt' untuk tokenisasi dan 'stopwords'
+    nltk.data.find('tokenizers/punkt')
+except nltk.downloader.DownloadError:
+    print("Mengunduh punkt...")
+    nltk.download('punkt')
+    
+try:
+    nltk.data.find('corpora/stopwords')
+except nltk.downloader.DownloadError:
+    print("Mengunduh stopwords...")
+    nltk.download('stopwords')
+    
 # 1. Load dan siapkan data awal
 def load_and_prepare(file_path):
     try:
@@ -90,7 +104,6 @@ def normalize_text(df):
 
 # 5. Tokenisasi, stopword removal, stemming + drop duplikat
 def tokenize_stop_stem(df):
-    import nltk
     from nltk.tokenize import word_tokenize
     nltk.download('stopwords')
     nltk.download('punkt')
