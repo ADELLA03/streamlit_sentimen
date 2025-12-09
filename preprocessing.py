@@ -2,25 +2,43 @@ import pandas as pd
 import re
 import requests
 import nltk
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize # Sudah ada di sini
 from io import BytesIO
 from nltk.corpus import stopwords
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 
+# ----------------------------------------------------
+# 1. SETUP GLOBAL NLTK DAN INISIALISASI OBJEK
+# ----------------------------------------------------
+
+# --- A. Resource Download (Dilakukan sekali saat script dimulai) ---
+# Mengunduh 'punkt'
 try:
-    # Mengunduh 'punkt' untuk tokenisasi dan 'stopwords'
     nltk.data.find('tokenizers/punkt')
 except nltk.downloader.DownloadError:
     print("Mengunduh punkt...")
     nltk.download('punkt')
     
+# Mengunduh 'stopwords'
 try:
     nltk.data.find('corpora/stopwords')
 except nltk.downloader.DownloadError:
     print("Mengunduh stopwords...")
     nltk.download('stopwords')
-    
-# 1. Load dan siapkan data awal
+
+# --- B. Inisialisasi Objek (Dilakukan sekali setelah download) ---
+# Inisialisasi Stopwords Indonesia
+nltk_stopwords = set(stopwords.words('indonesian'))
+
+# Inisialisasi Stemmer Sastrawi
+factory = StemmerFactory()
+stemmer = factory.create_stemmer()
+
+# ----------------------------------------------------
+# 2. DEFINISI FUNGSI
+# ----------------------------------------------------
+
+# 1. Load dan siapkan data awal (Tidak perlu diubah)
 def load_and_prepare(file_path):
     try:
         data = pd.read_csv(file_path, dtype={'created_at': str})
@@ -41,7 +59,7 @@ def load_and_prepare(file_path):
     df = df.rename(columns={'tanggal': 'date', 'jam': 'time', 'full_text': 'text'})
     return df
 
-# 2. Cleaning text
+# 2. Cleaning text (Tidak perlu diubah)
 def clean_text_column(df):
     def remove_URL(text): return re.sub(r'https?://\S+|www\.\S+', '', text)
     def remove_emoji(text):
@@ -75,12 +93,12 @@ def clean_text_column(df):
     )
     return df
 
-# 3. Case folding
+# 3. Case folding (Tidak perlu diubah)
 def apply_case_folding(df):
     df['case_folding'] = df['cleaning'].str.lower()
     return df
 
-# 4. Normalisasi kata
+# 4. Normalisasi kata (Tidak perlu diubah)
 def normalize_text(df):
     url = "https://raw.githubusercontent.com/ADELLA03/kamus-normalisasi/main/kamuskatabaku.xlsx"
     try:
@@ -102,16 +120,18 @@ def normalize_text(df):
     df['normalisasi'] = df['case_folding'].apply(replace_taboo_words)
     return df
 
-# 5. Tokenisasi, stopword removal, stemming + drop duplikat
+# 5. Tokenisasi, stopword removal, stemming + drop duplikat (Fungsi yang Diperbaiki)
 def tokenize_stop_stem(df):
-    from nltk.tokenize import word_tokenize
-    nltk.download('stopwords')
-    nltk.download('punkt')
+    # Hapus: from nltk.tokenize import word_tokenize (Sudah di atas)
+    # Hapus: nltk.download('stopwords')
+    # Hapus: nltk.download('punkt')
 
-    nltk_stopwords = set(stopwords.words('indonesian'))
-    factory = StemmerFactory()
-    stemmer = factory.create_stemmer()
+    # Hapus: nltk_stopwords = set(stopwords.words('indonesian'))
+    # Hapus: factory = StemmerFactory()
+    # Hapus: stemmer = factory.create_stemmer()
 
+    # Gunakan objek 'word_tokenize', 'nltk_stopwords', dan 'stemmer' yang sudah
+    # diinisialisasi di luar fungsi (di bagian SETUP GLOBAL)
     df['token'] = df['normalisasi'].apply(word_tokenize)
     df['stopword_removal'] = df['token'].apply(lambda x: [w for w in x if w.lower() not in nltk_stopwords])
     df['steming_data'] = df['stopword_removal'].apply(lambda x: ' '.join([stemmer.stem(w) for w in x]))
@@ -126,7 +146,7 @@ def tokenize_stop_stem(df):
     return df
 
 
-# 6. Pipeline lengkap preprocessing
+# 6. Pipeline lengkap preprocessing (Tidak perlu diubah)
 def run_full_preprocessing(file_path):
     df = load_and_prepare(file_path)
     df = clean_text_column(df)
