@@ -7,24 +7,7 @@ from io import BytesIO
 from nltk.corpus import stopwords
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 
-# ----------------------------------------------------
-# 1. SETUP GLOBAL NLTK DAN INISIALISASI OBJEK
-# ----------------------------------------------------
-
-# --- A. Resource Download (Dilakukan sekali saat script dimulai) ---
-# Mengunduh 'punkt'
-try:
-    nltk.data.find('tokenizers/punkt')
-except nltk.downloader.DownloadError:
-    print("Mengunduh punkt...")
-    nltk.download('punkt')
-    
-# Mengunduh 'stopwords'
-try:
-    nltk.data.find('corpora/stopwords')
-except nltk.downloader.DownloadError:
-    print("Mengunduh stopwords...")
-    nltk.download('stopwords')
+nltk.download()
 
 # --- B. Inisialisasi Objek (Dilakukan sekali setelah download) ---
 # Inisialisasi Stopwords Indonesia
