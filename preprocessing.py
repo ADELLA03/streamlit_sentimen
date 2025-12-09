@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 import requests
+import nltk
 from io import BytesIO
 from nltk.corpus import stopwords
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
